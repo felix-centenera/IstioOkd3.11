@@ -1,0 +1,8 @@
+Acceso a OCP VirtualBox
+ssh -v -L -fNT 8443:192.168.33.20:8443 felixcentenera@192.168.1.165
+
+ssh -v -L  8080:192.168.33.2:80 felixcentenera@192.168.1.165
+
+ssh -v -L  4443:192.168.33.2:443 felixcentenera@192.168.1.165
+
+-fNT ( run in background)
