@@ -29,27 +29,61 @@ oc rsh recommendation-v2-74bb946c69-wmrnk
 ```
 
 ```
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v2felix from '74bb946c69-lmn79': 91
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v1 from '7766dff6c6-7g4nw': 496
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v2felix from '74bb946c69-lmn79': 92
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation misbehavior from '74bb946c69-wmrnk'
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v1 from '7766dff6c6-7g4nw': 497
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v1 from '7766dff6c6-7g4nw': 498
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation misbehavior from '74bb946c69-wmrnk'
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v1 from '7766dff6c6-7g4nw': 499
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation v2felix from '74bb946c69-lmn79': 93
-[root@master-one CanaryRelease]# curl recommendation.tutorial.svc:8080
-recommendation misbehavior from '74bb946c69-wmrnk'
+curl  http://customer-tutorial.app.192.168.33.2.xip.io
 ```
 
 3) Now we are going to put out the services this V2 pod that answer with a misbehavior.
 ---------------------------------------------------
+```
+oc replace -f destination-rule-recommendation_cb_policy_pool_ejection.yml -n tutorial
+
+[root@master-one PoolEjection]# siege -r 2 -c 20 -v http://customer-tutorial.app.192.168.33.2.xip.io
+** SIEGE 3.1.4
+** Preparing 20 concurrent users for battle.
+The server is now under siege...
+HTTP/1.1 200   3.09 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   3.11 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   3.17 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   3.19 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   3.46 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   6.09 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   6.12 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   6.18 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   6.20 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   6.47 secs:      78 bytes ==> GET  /
+HTTP/1.1 503   5.52 secs:      54 bytes ==> GET  /
+HTTP/1.1 200   8.14 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   9.19 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   8.21 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   8.30 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   8.62 secs:      78 bytes ==> GET  /
+HTTP/1.1 200  11.17 secs:      78 bytes ==> GET  /
+HTTP/1.1 200  11.20 secs:      78 bytes ==> GET  /
+HTTP/1.1 200  11.21 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   9.04 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   8.11 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   7.77 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   6.06 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   6.15 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   5.13 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   5.79 secs:      71 bytes ==> GET  /
+HTTP/1.1 200  11.30 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   9.55 secs:      78 bytes ==> GET  /
+HTTP/1.1 200  12.01 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   4.99 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   4.91 secs:      71 bytes ==> GET  /
+HTTP/1.1 200   4.59 secs:      72 bytes ==> GET  /
+HTTP/1.1 200   3.01 secs:      72 bytes ==> GET  /
+HTTP/1.1 200   8.07 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   7.74 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   1.97 secs:      72 bytes ==> GET  /
+HTTP/1.1 200   6.18 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   5.45 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   5.04 secs:      78 bytes ==> GET  /
+HTTP/1.1 200   5.07 secs:      78 bytes ==> GET  /
+done.
+
+```
+
+Now during 15 second any request will go to the pod that has answer with a 503
+In this case always one user will found the error, then the next user "in our example during 15 seconds" will not found the error.
