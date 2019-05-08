@@ -1,12 +1,5 @@
 
 
-
-
-
-
-
-oc expose service customer
-
 1)Install mvn & JDK(not cover in this Readme)
 ----------------------------------------------
 ```

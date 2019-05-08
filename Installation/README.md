@@ -121,3 +121,6 @@ https://www.paradigmadigital.com/dev/jugando-con-istio-the-next-big-thing-en-mic
 https://blog.openshift.com/evaluate-istio-openshift/
 https://istio.io/docs/setup/kubernetes/install/helm/
 https://github.com/helm/helm/blob/master/docs/install.md
+
+
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set tracing.enabled=true | kubectl apply -f -
